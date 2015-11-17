@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="base.css"/>
+    <title>Demo</title>
+    <script src="bower_components/angular/angular.js"></script>
+    <script>
+        var app = angular.module('myApp', []).controller('MyController', function ($scope, Github, Promise) {
+            $scope.message = 'Hello';
+            $scope.search_term = 'nodejs';
+            /*var promise = Github.search($scope.search_term);
+            promise.then(function (config) {
+                // success
+                console.log(config);
+                console.log(config.headers('Content-Type'));
+            }, function (config) {
+                // error
+                if (config.status === 401) {
+                    // redirect to the login page
+                }
+            }).finally(function () {
+                console.log('callback complete ... ');
+            });*/
+
+            Promise.search().then(function (data) {
+                console.log(data);
+                $scope.data = data;
+
+            }, function (config) {
+                // error code
+                console.log(config);
+                console.log('There was an error trying to get the data ... ');
+                switch (config.status) {
+                    case 401: console.log('You are not logged in!');
+                        break;
+                    case 403: console.log('You are not authorized. Authentication will not help.');
+                        break;
+                    case -1: console.log('Could not find the resource. This is not an error with the server.');
+                        break;
+                    case 404: console.log('Could not find the resource. This is not an error with the server.');
+                        break;
+                }
+            });
+        });
+
+        app.controller('Controller2', function (Promise, $scope) {
+            $scope.printData = function () {
+                console.log(Promise.data);
+            }
+        });
+
+        // provider is the base, everything else is syntactic sugar on top of it
+        // constant, value, factory, service, provider
+
+        app.factory('Github', function ($http) {
+            var _data = {};
+            return {
+                get data() {
+                    return _data;
+                },
+                // service object
+                search: function (term) {
+                    return $http({
+                        url: 'https://api.github.com/search/repositories',
+                        params: {
+                            q: term
+                        },
+                        method: 'GET'
+                    });
+                }
+            };
+        });
+
+        app.factory('Promise', function ($q, $http) {
+            var _data = {};
+            return {
+                get data() {
+                    return _data;
+                },
+                search: function () {
+                    // search() --> return a promise
+                    return $q(function (resolve, reject) {
+                        // call resolve when the operation is successful
+                        // call reject when there is an error
+
+                        $http.get('http://api.github.com/search/repositories?q=data').then(function (config) {
+                            // success callback
+                            resolve(config.data);
+                            _data = config.data;
+                        }, function (config) {
+                            // error
+                            // redirect
+                            reject(config);
+                        });
+
+                    });
+                }
+            }
+        });
+
+    </script>
+    <style>
+
+        div.message {
+            padding: 1em;
+            display: inline-block;
+        }
+        .glow {
+
+            animation: keyfrm 200ms alternate infinite;
+        }
+
+        @keyframes keyfrm {
+            0% {
+                box-shadow: 0 0 10px 10px gray;
+            }
+            100% {
+                box-shadow: 0 0 100px 10px gray;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <div ng-controller="MyController">
+        {{message | uppercase}}
+        <div class="message" ng-class="{glow: data}"> I will start glowing once I have the data </div>
+        <div ng-hide="data">Still getting the data... please be patient :)</div>
+        <ul>
+            <li ng-repeat="item in data.items">
+                {{item.full_name}}
+            </li>
+        </ul>
+    </div>
+
+    <div ng-controller="Controller2">
+        <button ng-click="printData()">Print Data</button>
+    </div>
+</body>
+</html>

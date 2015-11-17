@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="base.css"/>
+    <title>Demo</title>
+    <script src="bower_components/angular/angular.js"></script>
+    <script type="text/ng-template" id="_hello.html">
+        <div style="margin: 1em; background-color: darkgreen;">
+            <h1>Hello World Directive</h1>
+            <div class="panel">{{message}}</div>
+        </div>
+    </script>
+    <script>
+        angular.module('myApp', []).controller('MyController', function ($scope) {
+            $scope.message = 'Hello';
+        }).directive('hello', function () {
+            return {
+                templateUrl: '_hello.html',
+                scope: {
+
+                },
+                link: function (scope, element, attrs) {
+                    scope.message = 'Hello from Directive';
+                    console.log(scope.message);
+                    element.on('click', function () {
+                        console.log('test');
+                        scope.$apply(function () {
+                            scope.message = 'Hello from the directive\'s click handler';
+                        });
+                    });
+                }
+            };
+        });
+    </script>
+</head>
+<body>
+
+
+    <div ng-controller="MyController">
+        {{message}}
+        <div style="padding: 1em; border: 1px solid red;" hello></div>
+    </div>
+</body>
+</html>

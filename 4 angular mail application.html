@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html ng-app="mailApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="base.css"/>
+    <title>Demo</title>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="app/app.js"></script>
+</head>
+<body>
+
+    <nav>
+        <a ui-sref="login">Login Page</a>
+        <a ui-sref="profile">Profile Page</a>
+        <a ui-sref="mails">Mails Page</a>
+    </nav>
+
+    <div ui-view></div>
+
+</body>
+</html>

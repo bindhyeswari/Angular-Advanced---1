@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="base.css"/>
+    <title>Demo</title>
+    <script src="bower_components/angular/angular.js"></script>
+    <script type="text/ng-template" id="_hello.html">
+        <div ng-click="clickHandler()">
+            <h1>Hello World Directive</h1>
+            <div class="panel">{{message}}</div>
+            <div>Candidate Name: {{candidate_name}}</div>
+            <input type="text" ng-model="candidate_name"/>
+        </div>
+    </script>
+    <script>
+        angular.module('myApp', []).controller('MyController', function ($scope) {
+            $scope.message = 'Hello';
+        }).directive('hello', function () {
+            return {
+                templateUrl: '_hello.html',
+                scope: {
+                    candidate_name: '@name'
+                },
+                link: function (scope, element, attrs) {
+                    scope.message = 'Hello from Directive';
+                    scope.clickHandler = function () {
+                        scope.message = 'Name of the candidate is ' + scope.candidate_name;
+                    };
+                }
+            };
+        });
+    </script>
+</head>
+<body>
+
+
+    <div ng-controller="MyController">
+        {{message}}
+        <input type="text" ng-model="name"/>
+        <br/>
+        <div style="padding: 1em; border: 1px solid red;" hello data-name="{{name}}"></div>
+    </div>
+</body>
+</html>
